@@ -1,18 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stickers para WhatsApp / 2da preentrega</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Kty&Pili Stickers</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Esta es la 2da preentrega</h1>
-    <p>Presiones F12 para ver la consola ¡Muchas gracias!</p>
-    <p>Katty Orellana</p>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Kty&Pili Stickers</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" onclick="startFlow()">Categoría de Sticker</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#sobre">Sobre Kty&Pili</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#instalar" onclick="showInstallationSteps()">Instalar Stickers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#nuevos" onclick="showNewStickersSection()">Sobre Nuevos Stickers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#siguenos">Síguenos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showCart()">Carrito <span id="cartCount">0</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-    <!-- <script src="JS/1erJS.js"></script> -->
-    <!-- <script src="JS/2doJS.js"></script> -->
-    <script src="JS/2doJS_v2.js"></script>
+    <div id="main-content">
+        <!-- Aquí se mostrará el contenido dinámico -->
+    </div>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="JS/3erJS_v2.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Llamamos a la función startFlow al cargar la página
+            startFlow();
+        });
+    </script>
 </body>
 </html>
