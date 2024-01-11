@@ -3,53 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Kty&Pili Stickers</title>
+    <title>Stickers Kty&Pili</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Kty&Pili Stickers</a>
+        <a class="navbar-brand" href="#">Stickers Kty&Pili</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item active">
+                    <!-- <a class="nav-link" href="#" onclick="startFlow()">Categoría de Sticker</a> -->
                     <a class="nav-link" href="#" onclick="startFlow()">Categoría de Sticker</a>
                 </li>
+                <!-- Agregado: Enlaces a otras páginas -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#sobre">Sobre Kty&Pili</a>
+                    <a class="nav-link" href="#" onclick="showAboutUsPage()">Sobre Kty&Pili</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#instalar" onclick="showInstallationSteps()">Instalar Stickers</a>
+                    <a class="nav-link" href="#" onclick="showInstallationPage()">Instalar Stickers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#nuevos" onclick="showNewStickersSection()">Sobre Nuevos Stickers</a>
+                    <a class="nav-link" href="#" onclick="showNewStickersPage()">Sobre Nuevos Stickers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#siguenos">Síguenos</a>
+                    <a class="nav-link" href="#" onclick="showFollowUsPage()">Síguenos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showCart()">Carrito <span id="cartCount">0</span></a>
+                    <a class="nav-link" href="#" onclick="showCartPage()">Carrito <span id="cartCount">0</span></a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <div id="main-content">
-        <!-- Aquí se mostrará el contenido dinámico -->
+    <div id="main-content" class="container mt-3">
+        <!-- Agregado: Contenedor para las categorías -->
+        <div id="categories-container" class="row">
+            <!-- Las categorías se renderizarán aquí -->
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="JS/3erJS_v2.js"></script>
+    <script src="JS/3erJS_v3.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Llamamos a la función startFlow al cargar la página
-            startFlow();
-        });
-    </script>
+    <script> document.addEventListener('DOMContentLoaded', startFlow);</script>
+
 </body>
 </html>
