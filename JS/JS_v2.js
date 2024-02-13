@@ -16,49 +16,72 @@ function showMessage(messageContent) {
     mainContainer.appendChild(messageElement);
 }
 
-// Variable global para almacenar el nombre del usuario
-let firstName;
+// Definición de variables globales
+let firstName = localStorage.getItem('userFirstName') || '';
+const selectedStickers = new Set();
+const selectedCategories = [];
 
-// Otras variables globales
-let selectedCategories = [];
-let selectedStickers = new Set();
+// Función para iniciar el flujo principal
+function startFlow() {
+    saveUserFirstName();
+    showNavigationMenu();
+    // Aquí podrías continuar con el resto del flujo principal
+}
+
+// Añadido: Función para guardar el nombre de usuario en el localStorage
+function saveUserFirstName() {
+    const storedName = localStorage.getItem('firstName');
+    if (!storedName) {
+        firstName = prompt('Por favor, ingresa tu nombre:');
+        localStorage.setItem('firstName', firstName);
+    }
+}
+
+// Verificar si ya hay un nombre de usuario en el local storage
+let userName = localStorage.getItem('userName');
+
+// Recuperar el nombre del usuario del Local Storage si existe
+const storedName = localStorage.getItem('firstName');
+if (storedName) {
+    firstName = storedName;
+}
 
 const categories = [
     {
         name: "San Valentín",
-        iconUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/01.png",
+        iconUrl: "./Images/01_ValentinesDay/01.png",
         stickers: [
-            { name: "Niña ilusionada", code: "SV1", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/01.png" },
-            { name: "Niña ilusionada LOVE", code: "SV2", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/02.png" },
-            { name: "Niña cupido", code: "SV3", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/03.png" },
-            { name: "Niña cupido LOVE", code: "SV4", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/04.png" },
-            { name: "Abrazo con texto: BEST FRIENDS", code: "SV5", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/05.png" },
-            { name: "Niñas con texto: BEST FRIENDS", code: "SV6", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/06.png" },
-            { name: "Saludando con texto: BEST FRIENDS", code: "SV7", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/01_ValentinesDay/07.png" },
+            { name: "Niña ilusionada", code: "SV1", imageUrl: "./Images/01_ValentinesDay/01.png" },
+            { name: "Niña ilusionada LOVE", code: "SV2", imageUrl: "./Images/01_ValentinesDay/02.png" },
+            { name: "Niña cupido", code: "SV3", imageUrl: "./Images/01_ValentinesDay/03.png" },
+            { name: "Niña cupido LOVE", code: "SV4", imageUrl: "./Images/01_ValentinesDay/04.png" },
+            { name: "Abrazo con texto: BEST FRIENDS", code: "SV5", imageUrl: "./Images/01_ValentinesDay/05.png" },
+            { name: "Niñas con texto: BEST FRIENDS", code: "SV6", imageUrl: "./Images/01_ValentinesDay/06.png" },
+            { name: "Saludando con texto: BEST FRIENDS", code: "SV7", imageUrl: "./Images/01_ValentinesDay/07.png" },
             // Agrega más stickers según sea necesario
         ],
     },
     {
         name: "Día de la madre",
-        iconUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/01.png" ,
+        iconUrl: "./Images/02_MothersDay/01.png" ,
         stickers: [
-            { name: "Abrazo de mamá, texto en inglés", code: "DM1", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/01.png" },
-            { name: "Abrazo de mamá, texto en español", code: "DM2", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/02.png" },
-            { name: "Cocinando con mamá, texto en inglés", code: "DM3", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/03.png" },
-            { name: "Cocinando con mamá, texto en español", code: "DM4", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/04.png" },
-            { name: "Estrellas con mamá, texto en inglés", code: "DM5", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/05.png" },
-            { name: "Estrellas con mamá, texto en español", code: "DM6", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/06.png" },
-            { name: "Happy day mon", code: "DM7", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/07.png" },
-            { name: "Feliz día mamá", code: "DM8", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/02_MothersDay/08.png" },
+            { name: "Abrazo de mamá, texto en inglés", code: "DM1", imageUrl: "./Images/02_MothersDay/01.png" },
+            { name: "Abrazo de mamá, texto en español", code: "DM2", imageUrl: "./Images/02_MothersDay/02.png" },
+            { name: "Cocinando con mamá, texto en inglés", code: "DM3", imageUrl: "./Images/02_MothersDay/03.png" },
+            { name: "Cocinando con mamá, texto en español", code: "DM4", imageUrl: "./Images/02_MothersDay/04.png" },
+            { name: "Estrellas con mamá, texto en inglés", code: "DM5", imageUrl: "./Images/02_MothersDay/05.png" },
+            { name: "Estrellas con mamá, texto en español", code: "DM6", imageUrl: "./Images/02_MothersDay/06.png" },
+            { name: "Happy day mon", code: "DM7", imageUrl: "./Images/02_MothersDay/07.png" },
+            { name: "Feliz día mamá", code: "DM8", imageUrl: "./Images/02_MothersDay/08.png" },
             // Agrega más stickers según sea necesario
         ],
     },
     {
         name: "Día del padre",
-        iconUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/03_FathersDay/01.png",
+        iconUrl: "./Images/03_FathersDay/01.png",
         stickers: [
-            { name: "Niña abrazando a papá", code: "DP1", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/03_FathersDay/01.png" },
-            { name: "Niña deseando ¡Feliz día papá!", code: "DP2", imageUrl: "/Proyecto_STICKERS/3raEntrega_Katty/Images/03_FathersDay/01.png" },
+            { name: "Niña abrazando a papá", code: "DP1", imageUrl: "./Images/03_FathersDay/01.png" },
+            { name: "Niña deseando ¡Feliz día papá!", code: "DP2", imageUrl: "./Images/03_FathersDay/01.png" },
             // Agrega más stickers según sea necesario
         ],
     },
@@ -72,19 +95,19 @@ function clearContent() {
 
 // Función para inicializar la página principal con formulario
 function initializeHomePage() {
-    clearContent(); 
-    titleHeading("Explora y descarga stickers para tus conversaciones en WhatsApp. Para empezar, ¿Cuál es tu nombre?");
+    clearContent();
+    titleHeading("¡Hola! Explora y descarga stickers para tus conversaciones en WhatsApp. Para empezar, ¿Cuál es tu nombre?");
 
     // Crear formulario para capturar el nombre del usuario
     const formElement = document.createElement('form');
-    formElement.addEventListener('submit', function(event) {
+    formElement.addEventListener('submit', function (event) {
         event.preventDefault();
         // Obtener el valor del nombre del usuario del formulario
         firstName = event.target.elements.name.value;
         // Mostrar mensaje de bienvenida personalizado
         showMessage(`¡Bienvenido, ${firstName}! Explora nuestra colección única de stickers.`);
-        // Agregar menú de navegación después de mostrar el mensaje
-        showNavigationMenu();
+        // Mostrar las categorías de stickers
+        showCategoriesPage();
     });
 
     // Crear campo de entrada para el nombre
@@ -105,7 +128,54 @@ function initializeHomePage() {
 
     // Agregar el formulario al contenedor principal
     mainContainer.appendChild(formElement);
+
+    // Verificar si ya se tiene el nombre guardado
+    if (!firstName) {
+        // Crear formulario solo si no se tiene el nombre
+        const formElement = document.createElement('form');
+        formElement.addEventListener('submit', function (event) {
+            event.preventDefault();
+            // Obtener el valor del nombre del usuario del formulario
+            firstName = event.target.elements.name.value;
+            // Guardar el nombre en el Local Storage
+            localStorage.setItem('firstName', firstName);
+            // Mostrar mensaje de bienvenida personalizado
+            showMessage(`¡Bienvenido, ${firstName}! Explora nuestra colección única de stickers.`);
+            // Mostrar las categorías de stickers
+            showCategoriesPage();
+        });
+    
+    } else {
+        // Si ya se tiene el nombre, mostrar mensaje de bienvenida directamente
+        showMessage(`¡Bienvenido de nuevo, ${firstName}! Explora nuestra colección única de stickers.`);
+    }
 }
+
+// Función para mostrar el formulario de nombre
+function showNameForm() {
+    const nameForm = prompt("Por favor, ingresa tu nombre:");
+    if (nameForm) {
+        userName = nameForm;
+        localStorage.setItem('userName', userName);
+    }
+}
+
+// Función principal
+function main() {
+    if (!userName) {
+        showNameForm();
+    }
+
+    // Verificar si la página actual es la de categoría de sticker
+    if (window.location.href.includes("categoria_sticker.html")) {
+        showStickerCategoryPage();
+    } else if (window.location.href.includes("resumen_stickers.html")) {
+        showStickerSummaryPage();
+    }
+}
+
+// Llamada a la función principal
+main();
 
 // Añadido: Función para inicializar el flujo del programa
 function startFlow() {
@@ -116,30 +186,19 @@ function startFlow() {
 function showAboutUsPage() {
     clearContent();
     titleHeading("Sobre Kty&Pili");
-    showMessage("Somos Kty&Pili, tu fuente de stickers emocionantes. Descubre la magia en cada imagen.");
-
-    // Simula el contenido de "Sobre Kty&Pili" con un botón para avanzar
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Siguiente';
-    nextButton.addEventListener('click', showInstallationPage);
-    mainContainer.appendChild(nextButton);
+    showMessage(`Somos un equipo conformado por Katty Orellana y Pilar Orellana, con más de 18 años de experiencia en el mundo del diseño gráfico, ilustración y animación 2D.`);
+    showMessage(`En este proyecto tenemos el agrado de compartir algunos stickers para que disfrutes en tu comunicación por WhatsApp.`);
 }
 
-// Función para mostrar la página de instalación de stickers
+// Añadido: Función para mostrar la página "Instalar Stikers"
 function showInstallationPage() {
+    clearContent();
     titleHeading("Instalar Stickers");
-    showMessage("¡Es fácil instalar nuestros stickers! Sigue estos simples pasos y disfruta de la diversión.");
-
-    showMessage("1. Abre tu aplicación de mensajería.");
-    showMessage("2. Selecciona tu conversación.");
-    showMessage("3. Encuentra la opción de stickers en el menú de emojis.");
-    showMessage("4. ¡Envía stickers y diviértete!");
-
-    // Simula el contenido de instalación con un botón para avanzar
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Siguiente';
-    nextButton.addEventListener('click', showNewStickersPage);
-    mainContainer.appendChild(nextButton);
+    showMessage (`Para instalar tus stickers, sigue estos pasos:`);
+    showMessage (`1. Abre tu aplicación de mensajería favorita.`);
+    showMessage (`2. Selecciona la conversación o chat donde deseas enviar los stickers.`);
+    showMessage (`3. Busca la opción de stickers en el menú de emojis.`);
+    showMessage (`4. ¡Disfruta enviando tus nuevos stickers!`);
 }
 
 // Añadido: Función para mostrar la página de stickers de una categoría específica
@@ -147,20 +206,40 @@ function showStickersPage(categoryName) {
     clearContent();
     const selectedCategory = categories.find(category => category.name === categoryName);
     titleHeading(`Stickers de ${selectedCategory.name}`);
+    showMessage(`Descubre los stickers de ${selectedCategory.name} y elige tus favoritos.`);
     
     // Verificamos si hay stickers en la categoría seleccionada
     if (selectedCategory.stickers && selectedCategory.stickers.length > 0) {
         selectedCategory.stickers.forEach(sticker => {
-            const stickerElement = document.createElement('div');
-            stickerElement.classList.add('sticker-card');
-            
+            const stickerCard = document.createElement('div');
+            stickerCard.classList.add('sticker-card');
+
             // Agregamos una imagen pequeña de sticker (actualiza el URL de la imagen)
-            stickerElement.innerHTML = `
-                <img src="${sticker.imageUrl}" alt="${sticker.name}" class="sticker-image">
-                <p>${sticker.name}</p>
-                <button onclick="addToCart('${selectedCategory.name}', '${sticker.name}')">Agregar al carrito</button>
-            `;
-            mainContainer.appendChild(stickerElement);
+            const stickerImage = document.createElement('img');
+            stickerImage.src = sticker.imageUrl;
+            stickerImage.alt = sticker.name;
+            stickerImage.classList.add('sticker-image');
+            
+            // Contenedor para el nombre del sticker
+            const stickerNameContainer = document.createElement('div');
+            stickerNameContainer.classList.add('sticker-name-container');
+
+            // Nombre del sticker
+            const stickerName = document.createElement('p');
+            stickerName.textContent = sticker.name;
+
+            // Botón para añadir o eliminar el sticker
+            const actionButton = document.createElement('button');
+            actionButton.textContent = selectedStickers.has(sticker.code) ? 'Eliminar' : 'Añadir';
+            actionButton.addEventListener('click', () => toggleStickerSelection(selectedCategory.name, sticker.name));
+
+            // Añadir elementos al contenedor de la tarjeta de sticker
+            stickerCard.appendChild(stickerImage);
+            stickerNameContainer.appendChild(stickerName);
+            stickerCard.appendChild(stickerNameContainer);
+            stickerCard.appendChild(actionButton);
+
+            mainContainer.appendChild(stickerCard);
         });
     } else {
         showMessage(`¡Ups! No hay stickers disponibles en la categoría ${categoryName} actualmente.`);
@@ -181,81 +260,103 @@ function showMessage(messageContent) {
 }
 
 // Añadido: Función para mostrar la página de nuevos stickers
+function showStickersPage(categoryName) {
+    clearContent();
+    const selectedCategory = categories.find(category => category.name === categoryName);
+    titleHeading(`Stickers de ${selectedCategory.name}`);
+    showMessage(`Descubre los stickers de ${selectedCategory.name} y elige tus favoritos.`);
+
+    // Verificamos si hay stickers en la categoría seleccionada
+    if (selectedCategory.stickers && selectedCategory.stickers.length > 0) {
+        selectedCategory.stickers.forEach(sticker => {
+            const stickerElement = document.createElement('div');
+            stickerElement.classList.add('sticker-card');
+
+            // Agregamos una imagen pequeña de sticker (actualiza el URL de la imagen)
+            stickerElement.innerHTML = `
+                <img src="${sticker.imageUrl}" alt="${sticker.name}" class="sticker-image">
+                <p>${sticker.name}</p>
+                <button onclick="toggleStickerSelection('${selectedCategory.name}', '${sticker.name}')">Seleccionar</button>
+            `;
+            mainContainer.appendChild(stickerElement);
+        });
+    } else {
+        showMessage(`¡Ups! No hay stickers disponibles en la categoría ${categoryName} actualmente.`);
+    }
+
+    // Añadido: Mostrar botón para volver a la página de categorías
+    const returnButton = document.createElement('button');
+    returnButton.textContent = 'Volver a Categorías';
+    returnButton.addEventListener('click', showCategoriesPage);
+    mainContainer.appendChild(returnButton);
+}
+
+// Añadido: Función para mostrar la página "Sobre Nuevos Stickers" con un formulario para ingresar el email
 function showNewStickersPage() {
     clearContent();
-    titleHeading("Nuevos Stickers");
+    titleHeading("Sobre Nuevos Stickers");
 
-    showMessage("¡Descubre nuestros nuevos stickers! Ingresa tu correo electrónico para recibir las últimas actualizaciones.");
-
-    // Crear el formulario
     const emailForm = document.createElement('form');
+    emailForm.innerHTML = `
+        <label for="email">Ingresa tu email para recibir notificaciones sobre nuevos stickers:</label>
+        <input type="email" id="email" name="email" required>
+        <button type="submit">Enviar</button>
+    `;
     emailForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // Evitar que el formulario se envíe automáticamente
-
-        // Obtener el valor del correo electrónico del formulario
-        const emailInput = event.target.elements.email.value;
-
-        // Validar el formato del correo electrónico (puedes usar expresiones regulares)
-        const emailRegex = /^\S+@\S+\.\S+$/;
-        if (emailRegex.test(emailInput)) {
-            // Acción a realizar con el correo electrónico (puedes enviarlo a un servidor, almacenarlo localmente, etc.)
-            showMessage(`¡Gracias por suscribirte, te informaremos sobre nuestros nuevos stickers a ${emailInput}!`);
-        } else {
-            showMessage("El formato del correo electrónico no es válido. Inténtalo nuevamente.");
-        }
+        event.preventDefault();
+        const email = event.target.email.value;
+        // Aquí podrías hacer algo con el email, como enviarlo a tu servidor para su procesamiento
+        showMessage(`¡Gracias por registrarte! Te mantendremos informado sobre los nuevos stickers.`);
     });
-
-    // Crear el campo de entrada de correo electrónico
-    const emailInput = document.createElement('input');
-    emailInput.setAttribute('type', 'email');
-    emailInput.setAttribute('name', 'email');
-    emailInput.setAttribute('placeholder', 'Ingresa tu correo electrónico');
-    emailInput.setAttribute('required', true);
-
-    // Crear el botón de envío del formulario
-    const submitButton = document.createElement('button');
-    submitButton.setAttribute('type', 'submit');
-    submitButton.textContent = 'Suscribirse';
-
-    // Agregar elementos al formulario
-    emailForm.appendChild(emailInput);
-    emailForm.appendChild(submitButton);
-
-    // Agregar el formulario al contenedor principal
     mainContainer.appendChild(emailForm);
-
-    // Añadido: Mostrar botón para volver al menú principal
-    const returnButton = document.createElement('button');
-    returnButton.textContent = 'Volver al Menú Principal';
-    returnButton.addEventListener('click', initializeHomePage);
-    mainContainer.appendChild(returnButton);
 }
 
 // Función para mostrar la página de redes sociales
 function showFollowUsPage() {
+    clearContent();
     titleHeading("Síguenos en Redes Sociales");
     showMessage("Conéctate con nosotros en las redes sociales para mantenerte actualizado sobre nuevos lanzamientos y promociones.");
 
-    // Simula el contenido de la página de redes sociales con un botón para avanzar
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Siguiente';
-    nextButton.addEventListener('click', showCartPage);
-    mainContainer.appendChild(nextButton);
+    const socialLinks = [
+        { name: "Facebook", url: "https://www.facebook.com/tucuenta" },
+        { name: "LinkedIn", url: "https://www.linkedin.com/in/tucuenta" },
+        { name: "Twitter", url: "https://twitter.com/tucuenta" },
+    ];
+
+    const socialList = document.createElement('ul');
+    socialLinks.forEach(link => {
+        const listItem = document.createElement('li');
+        const anchor = document.createElement('a');
+        anchor.href = link.url;
+        anchor.textContent = link.name;
+        listItem.appendChild(anchor);
+        socialList.appendChild(listItem);
+    });
+
+    mainContainer.appendChild(socialList);
 }
 
-// Añadido: Función para mostrar la página del carrito
+// Añadido: Función para mostrar la página de "Resumen de Stickers" y descargar los stickers seleccionados
 function showCartPage() {
-    titleHeading("Tu Carrito de Compras");
-    showMessage("Revisa tu carrito y procede al pago para llevar la diversión de nuestros stickers a tu vida.");
+    clearContent();
+    titleHeading("Carrito - Resumen de Stickers");
 
-    // Agregado: Mostrar contenido del carrito (simulado)
-    showCartContent();
+    const stickerList = document.createElement('ul');
+    selectedStickers.forEach(selectedSticker => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `Categoría: ${selectedSticker.category}, Sticker: ${selectedSticker.sticker.name}`;
+        stickerList.appendChild(listItem);
+    });
 
-    // Simula el contenido del carrito con un botón para avanzar
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Finalizar Compra';
-    nextButton.addEventListener('click', showThankYouPage);
-    mainContainer.appendChild(nextButton);
+    mainContainer.appendChild(stickerList);
+
+    // Añadido: Mostrar botón de descargar stickers
+    const downloadButton = document.createElement('button');
+    downloadButton.textContent = 'Descargar';
+    downloadButton.addEventListener('click', function() {
+        downloadStickers(); // Llama a la función para descargar los stickers al hacer clic en el botón
+    });
+    mainContainer.appendChild(downloadButton);
 }
 
 // Añadido: Función para mostrar la página de agradecimiento
@@ -348,14 +449,14 @@ function clearCategoriesContainer() {
 
 // Puedes simplificar el código usando findIndex y spread operator.
 function toggleStickerSelection(categoryName, stickerName) {
-    const existingSelectionIndex = selectedStickers.findIndex(selected => selected.category === categoryName && selected.sticker.name === stickerName);
+    const existingSelectionIndex = Array.from(selectedStickers).findIndex(selected => selected.category === categoryName && selected.sticker.name === stickerName);
 
     if (existingSelectionIndex !== -1) {
         // Si ya está seleccionado, eliminarlo
-        selectedStickers.splice(existingSelectionIndex, 1);
+        selectedStickers.delete(existingSelectionIndex);
     } else {
         // Si no está seleccionado, agregarlo
-        selectedStickers.push({ category: categoryName, sticker: { name: stickerName } });
+        selectedStickers.add({ category: categoryName, sticker: { name: stickerName } });
     }
 }
 
@@ -377,13 +478,40 @@ function showStickers(categoryIndex) {
     titleHeading(`Stickers de ${selectedCategory.name}`);
     
     selectedCategory.stickers.forEach(sticker => {
-        const stickerElement = document.createElement('div');
-        stickerElement.classList.add('sticker');
-        stickerElement.innerHTML = `
-            <p>${sticker.name}</p>
-            <button onclick="addToCart('${selectedCategory.name}', '${sticker.name}')">Agregar al carrito</button>
-        `;
-        mainContainer.appendChild(stickerElement);
+        const stickerCard = document.createElement('div');
+        stickerCard.classList.add('sticker-card');
+    
+        // Contenedor para la imagen del sticker
+        const stickerImageContainer = document.createElement('div');
+        stickerImageContainer.classList.add('sticker-image-container');
+    
+        // Imagen del sticker
+        const stickerImage = document.createElement('img');
+        stickerImage.src = sticker.imageUrl;
+        stickerImage.alt = sticker.name;
+        stickerImage.classList.add('sticker-image');
+    
+        // Contenedor para el nombre del sticker
+        const stickerNameContainer = document.createElement('div');
+        stickerNameContainer.classList.add('sticker-name-container');
+    
+        // Nombre del sticker
+        const stickerName = document.createElement('p');
+        stickerName.textContent = sticker.name;
+    
+        // Botón para añadir o eliminar el sticker
+        const actionButton = document.createElement('button');
+        actionButton.textContent = selectedStickers.has(sticker.code) ? 'Eliminar' : 'Añadir';
+        actionButton.addEventListener('click', () => toggleStickerSelection(selectedCategory.name, sticker.name));
+    
+        // Añadir elementos al contenedor del sticker
+        stickerImageContainer.appendChild(stickerImage);
+        stickerNameContainer.appendChild(stickerName);
+        stickerCard.appendChild(stickerImageContainer);
+        stickerCard.appendChild(stickerNameContainer);
+        stickerCard.appendChild(actionButton);
+    
+        mainContainer.appendChild(stickerCard);
     });
 }
 
@@ -393,10 +521,12 @@ function addToCart(category, sticker) {
     // Puedes realizar aquí la lógica para agregar el sticker al carrito
 }
 
-// Añadido: Volver al menú principal después de la instalación
+// Añadido: Función para mostrar la página principal después de la instalación
 function returnToMainMenu() {
-    startFlow(); // Cambiado de initializeHomePage a startFlow
+    startFlow();
 }
+
+
 
 // Añadido: Función para mostrar la página de categorías
 function showCategoriesPage() {
@@ -410,8 +540,41 @@ function showCategoriesPage() {
     // Añadido: Mostrar botón para volver al menú principal
     const returnButton = document.createElement('button');
     returnButton.textContent = 'Volver al Menú Principal';
-    returnButton.addEventListener('click', initializeHomePage);
+    returnButton.addEventListener('click', startFlow);
     mainContainer.appendChild(returnButton);
+}
+
+// Añadido: Función para mostrar el resumen de stickers seleccionados
+function showSummaryPage() {
+    clearContent();
+    titleHeading("Resumen de Stickers Seleccionados");
+
+    // Mostrar la lista de stickers seleccionados de manera dinámica
+    showMessage(selectedCategories.map((category, index) => `Categoría ${index + 1}: ${category.name}\nStickers:\n${selectedStickers
+        .filter(selected => selected.category === category.name)
+        .map(selected => `- ${selected.sticker.name}`)
+        .join('\n')}`).join('\n'));
+
+    // Añadido: Mostrar botón para descargar stickers
+    const downloadButton = document.createElement('button');
+    downloadButton.textContent = 'Descargar Stickers';
+    downloadButton.addEventListener('click', downloadStickers);
+    mainContainer.appendChild(downloadButton);
+
+    // Añadido: Mostrar botón para volver al menú principal
+    const returnButton = document.createElement('button');
+    returnButton.textContent = 'Volver al Menú Principal';
+    returnButton.addEventListener('click', startFlow);
+    mainContainer.appendChild(returnButton);
+}
+
+// Añadido: Función para descargar los stickers seleccionados y redirigir después de la descarga
+function downloadStickers() {
+    // Aquí podrías implementar la lógica para descargar los stickers
+    showMessage('¡Descarga exitosa!');
+    setTimeout(() => {
+        showInstallationPage(); // Redirige a la página de instalación después de 2 segundos
+    }, 2000);
 }
 
 // Añadido: Función para mostrar el menú de navegación
@@ -429,7 +592,7 @@ function showNavigationMenu() {
         { name: "Instalar stickers", action: showInstallationPage },
         { name: "Sobre nuevos stickers", action: showNewStickersPage },
         { name: "Redes sociales", action: showFollowUsPage },
-        { name: "Carrito", action: showCartPage },
+        { name: "Resumen de stickers", action: showSummaryPage },
     ];
 
     const navigationContainer = document.createElement('div');
@@ -446,12 +609,26 @@ function showNavigationMenu() {
     mainContainer.appendChild(navigationContainer);
 }
 
+// Añadido: Función para mostrar el menú principal
+function showMainMenu() {
+    clearContent();
+    titleHeading("Menú Principal");
+    showMessage(`¡Hola ${firstName}! Bienvenido a Stickers Kty&Pili. ¿Qué te gustaría hacer hoy?`);
+
+    // Mostrar opciones de navegación
+    showNavigationMenu();
+}
+
 // Llamamos a la función principal al cargar la página
-document.addEventListener('DOMContentLoaded', startFlow);
+document.addEventListener('DOMContentLoaded', () => {
+    saveUserFirstName();
+    showMainMenu(); // Mostrar el menú principal al cargar la página
+});
 
 // Bucle principal
 let continueFlow = true;
 while (continueFlow) {
+    saveUserFirstName();
     let selectedCategoryIndex = chooseCategoryInteractive(categories);
     let selectedCategory = categories[selectedCategoryIndex];
     showMessage(`¡Excelente elección ${firstName}! Descubre los stickers disponibles en ${selectedCategory.name}`);
