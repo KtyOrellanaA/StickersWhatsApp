@@ -318,9 +318,9 @@ function showFollowUsPage() {
     showMessage("Conéctate con nosotros en las redes sociales para mantenerte actualizado sobre nuevos lanzamientos y promociones.");
 
     const socialLinks = [
-        { name: "Facebook", url: "https://www.facebook.com/tucuenta" },
-        { name: "LinkedIn", url: "https://www.linkedin.com/in/tucuenta" },
-        { name: "Twitter", url: "https://twitter.com/tucuenta" },
+        { name: "Facebook Kty&Pili", url: "https://www.facebook.com/KtyPili/" },
+        { name: "LinkedIn Kty&Pili", url: "https://www.linkedin.com/company/kty&pili/" },
+        { name: "Twitter Kty&Pili", url: "https://twitter.com/ktypili" },
     ];
 
     const socialList = document.createElement('ul');
@@ -526,8 +526,6 @@ function returnToMainMenu() {
     startFlow();
 }
 
-
-
 // Añadido: Función para mostrar la página de categorías
 function showCategoriesPage() {
     clearContent();
@@ -590,7 +588,7 @@ function showNavigationMenu() {
         { name: "Categorías de stickers", action: showCategoriesPage },
         { name: "Sobre Kty&Pili", action: showAboutUsPage },
         { name: "Instalar stickers", action: showInstallationPage },
-        { name: "Sobre nuevos stickers", action: showNewStickersPage },
+        { name: "Nuevos stickers", action: showNewStickersPage },
         { name: "Redes sociales", action: showFollowUsPage },
         { name: "Resumen de stickers", action: showSummaryPage },
     ];
