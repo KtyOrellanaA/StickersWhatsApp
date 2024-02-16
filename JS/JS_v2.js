@@ -16,8 +16,10 @@ function showMessage(messageContent) {
     mainContainer.appendChild(messageElement);
 }
 
+// Verificar si hay un nombre de usuario almacenado en el Local Storage
+let firstName = localStorage.getItem('firstName');
+
 // Definición de variables globales
-let firstName = localStorage.getItem('userFirstName') || '';
 const selectedStickers = new Set();
 const selectedCategories = [];
 
@@ -28,12 +30,11 @@ function startFlow() {
     // Aquí podrías continuar con el resto del flujo principal
 }
 
-// Añadido: Función para guardar el nombre de usuario en el localStorage
+// Función para guardar el nombre del usuario en el Local Storage
 function saveUserFirstName() {
-    const storedName = localStorage.getItem('firstName');
-    if (!storedName) {
-        firstName = prompt('Por favor, ingresa tu nombre:');
-        localStorage.setItem('firstName', firstName);
+    if (!firstName) {
+        const userInput = prompt('Por favor, ingresa tu nombre:');
+        localStorage.setItem('firstName', userInput);
     }
 }
 
@@ -103,7 +104,7 @@ function initializeHomePage() {
     formElement.addEventListener('submit', function (event) {
         event.preventDefault();
         // Obtener el valor del nombre del usuario del formulario
-        firstName = event.target.elements.name.value;
+        let firstName = event.target.elements.name.value;
         // Mostrar mensaje de bienvenida personalizado
         showMessage(`¡Bienvenido, ${firstName}! Explora nuestra colección única de stickers.`);
         // Mostrar las categorías de stickers
@@ -318,9 +319,9 @@ function showFollowUsPage() {
     showMessage("Conéctate con nosotros en las redes sociales para mantenerte actualizado sobre nuevos lanzamientos y promociones.");
 
     const socialLinks = [
-        { name: "Facebook", url: "https://www.facebook.com/tucuenta" },
-        { name: "LinkedIn", url: "https://www.linkedin.com/in/tucuenta" },
-        { name: "Twitter", url: "https://twitter.com/tucuenta" },
+        { name: "Facebook Kty&Pili", url: "https://www.facebook.com/KtyPili/" },
+        { name: "LinkedIn Kty&Pili", url: "https://www.linkedin.com/company/kty&pili/" },
+        { name: "Twitter Kty&Pili", url: "https://twitter.com/ktypili" },
     ];
 
     const socialList = document.createElement('ul');
@@ -453,22 +454,16 @@ function toggleStickerSelection(categoryName, stickerName) {
 
     if (existingSelectionIndex !== -1) {
         // Si ya está seleccionado, eliminarlo
-        selectedStickers.delete(existingSelectionIndex);
+        selectedStickers.splice(existingSelectionIndex, 1);
     } else {
         // Si no está seleccionado, agregarlo
-        selectedStickers.add({ category: categoryName, sticker: { name: stickerName } });
+        selectedStickers.push({ category: categoryName, sticker: { name: stickerName } });
     }
 }
 
-// Añadido: Función para elegir la categoría interactivamente
+// Añadido: Función para seleccionar una categoría de manera interactiva
 function chooseCategoryInteractive(categories) {
-    let optionCategory;
-
-    do {
-        optionCategory = parseInt(prompt(`Elige una categoría (1-${categories.length}):`));
-    } while (isNaN(optionCategory) || optionCategory < 1 || optionCategory > categories.length);
-
-    return optionCategory - 1;  // Ajustamos el índice para coincidir con el arreglo
+    return 0;  // Selecciona la primera categoría por defecto
 }
 
 // Función para mostrar los stickers de una categoría específica
@@ -501,8 +496,11 @@ function showStickers(categoryIndex) {
     
         // Botón para añadir o eliminar el sticker
         const actionButton = document.createElement('button');
-        actionButton.textContent = selectedStickers.has(sticker.code) ? 'Eliminar' : 'Añadir';
-        actionButton.addEventListener('click', () => toggleStickerSelection(selectedCategory.name, sticker.name));
+        actionButton.textContent = selectedStickers.find(selected => selected.category === selectedCategory.name && selected.sticker.name === sticker.name) ? 'Eliminar' : 'Añadir';
+        actionButton.addEventListener('click', () => {
+            toggleStickerSelection(selectedCategory.name, sticker.name);
+            showSummaryPage(); // Actualiza el resumen después de cambiar la selección
+        });
     
         // Añadir elementos al contenedor del sticker
         stickerImageContainer.appendChild(stickerImage);
@@ -513,6 +511,10 @@ function showStickers(categoryIndex) {
     
         mainContainer.appendChild(stickerCard);
     });
+}
+
+// Añadido: Función para agregar stickers al resumen de selección
+function addToSelection(category, sticker) {
 }
 
 // Añadido: Función para agregar stickers al carrito
@@ -526,45 +528,35 @@ function returnToMainMenu() {
     startFlow();
 }
 
-
-
-// Añadido: Función para mostrar la página de categorías
+// Función para mostrar la página de categorías
 function showCategoriesPage() {
     clearContent();
     titleHeading("Categorías de Stickers");
-    showMessage(`¡Hola ${firstName}! Explora nuestras increíbles categorías de stickers.`);
+    showMessage(`¡Hola ${localStorage.getItem('firstName')}! Explora nuestras increíbles categorías de stickers.`);
 
     // Renderizar las categorías de manera dinámica
     renderCategories(categories);
-
-    // Añadido: Mostrar botón para volver al menú principal
-    const returnButton = document.createElement('button');
-    returnButton.textContent = 'Volver al Menú Principal';
-    returnButton.addEventListener('click', startFlow);
-    mainContainer.appendChild(returnButton);
 }
 
-// Añadido: Función para mostrar el resumen de stickers seleccionados
+// Función para mostrar el resumen de stickers seleccionados
 function showSummaryPage() {
     clearContent();
     titleHeading("Resumen de Stickers Seleccionados");
 
-    // Mostrar la lista de stickers seleccionados de manera dinámica
-    showMessage(selectedCategories.map((category, index) => `Categoría ${index + 1}: ${category.name}\nStickers:\n${selectedStickers
-        .filter(selected => selected.category === category.name)
-        .map(selected => `- ${selected.sticker.name}`)
-        .join('\n')}`).join('\n'));
+    // Verificar si hay stickers seleccionados
+    if (selectedStickers.length === 0) {
+        showMessage("Aún no has seleccionado ningún sticker.");
+    } else {
+        // Mostrar la lista de stickers seleccionados
+        showMessage(selectedStickers.map(selectedSticker => {
+            return `Categoría: ${selectedSticker.category}\nSticker: ${selectedSticker.sticker.name}`;
+        }).join('\n\n'));
+    }
 
-    // Añadido: Mostrar botón para descargar stickers
-    const downloadButton = document.createElement('button');
-    downloadButton.textContent = 'Descargar Stickers';
-    downloadButton.addEventListener('click', downloadStickers);
-    mainContainer.appendChild(downloadButton);
-
-    // Añadido: Mostrar botón para volver al menú principal
+    // Mostrar botón para volver al menú principal
     const returnButton = document.createElement('button');
     returnButton.textContent = 'Volver al Menú Principal';
-    returnButton.addEventListener('click', startFlow);
+    returnButton.addEventListener('click', showMainMenu);
     mainContainer.appendChild(returnButton);
 }
 
@@ -577,7 +569,7 @@ function downloadStickers() {
     }, 2000);
 }
 
-// Añadido: Función para mostrar el menú de navegación
+// Función para mostrar el menú de navegación
 function showNavigationMenu() {
     const logoElement = document.createElement('div');
     logoElement.innerHTML = `
@@ -590,7 +582,7 @@ function showNavigationMenu() {
         { name: "Categorías de stickers", action: showCategoriesPage },
         { name: "Sobre Kty&Pili", action: showAboutUsPage },
         { name: "Instalar stickers", action: showInstallationPage },
-        { name: "Sobre nuevos stickers", action: showNewStickersPage },
+        { name: "Nuevos stickers", action: showNewStickersPage },
         { name: "Redes sociales", action: showFollowUsPage },
         { name: "Resumen de stickers", action: showSummaryPage },
     ];
@@ -613,29 +605,33 @@ function showNavigationMenu() {
 function showMainMenu() {
     clearContent();
     titleHeading("Menú Principal");
-    showMessage(`¡Hola ${firstName}! Bienvenido a Stickers Kty&Pili. ¿Qué te gustaría hacer hoy?`);
-
+    showMessage(`¡Hola ${localStorage.getItem('firstName')}! Bienvenido a Stickers Kty&Pili. ¿Qué te gustaría hacer hoy?`);
     // Mostrar opciones de navegación
     showNavigationMenu();
 }
 
-// Llamamos a la función principal al cargar la página
+// Iniciar el flujo principal al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-    saveUserFirstName();
-    showMainMenu(); // Mostrar el menú principal al cargar la página
+    if (!localStorage.getItem('firstName')) {
+        saveUserFirstName();
+    }
+    showMainMenu();
+    showCategoriesPage();
 });
 
-// Bucle principal
+// Bucle principal (eliminando el uso de prompt)
 let continueFlow = true;
 while (continueFlow) {
-    saveUserFirstName();
     let selectedCategoryIndex = chooseCategoryInteractive(categories);
     let selectedCategory = categories[selectedCategoryIndex];
-    showMessage(`¡Excelente elección ${firstName}! Descubre los stickers disponibles en ${selectedCategory.name}`);
+    showMessage(`¡Excelente elección ${localStorage.getItem('firstName')}! Descubre los stickers disponibles en ${selectedCategory.name}`);
 
     let keepRunningSticker = true;
 
     while (keepRunningSticker) {
+        // Mostrar stickers de la categoría seleccionada
+        showStickers(selectedCategoryIndex);
+
         let contentChoiceOfACategory1 = `${firstName}, elige tu sticker favorito.\nSelecciona una opción y escribe el número correspondiente:\n \n`;
 
         selectedCategory.stickers.forEach((sticker, index) => {
@@ -659,14 +655,15 @@ while (continueFlow) {
             };
 
             selectedStickers.add(selectedSticker.code);
-            selectedStickers.push(selectedStickerObject);
+            selectedStickers.add(selectedStickerObject);
         } else {
             showMessage(`Ya has seleccionado el sticker ${selectedSticker.name}. Elige otro.`);
         }
 
+        // Verificar si el usuario desea agregar más stickers o modificar su selección
         let continueOption;
         do {
-            continueOption = parseInt(prompt(`${firstName}, ¿quieres agregar más stickers o modificar tu selección?\n \n1. Agregar más stickers\n2. Modificar selección\n3. Finalizar`));
+            continueOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres agregar más stickers o modificar tu selección?\n \n1. Agregar más stickers\n2. Modificar selección\n3. Finalizar`));
         } while (isNaN(continueOption) || continueOption < 1 || continueOption > 3);
 
         switch (continueOption) {
@@ -686,11 +683,13 @@ while (continueFlow) {
         }
     }
 
+    addToSelection(selectedCategory.name);
+
     selectedCategories.push(selectedCategory);
 
     let exploreMoreOption;
     do {
-        exploreMoreOption = parseInt(prompt(`${firstName}, ¿quieres explorar más categorías o revisar tus selecciones?\n \n1. Explorar más categorías\n2. Revisar selecciones\n3. Finalizar`));
+        exploreMoreOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres explorar más categorías o revisar tus selecciones?\n \n1. Explorar más categorías\n2. Revisar selecciones\n3. Finalizar`));
     } while (isNaN(exploreMoreOption) || exploreMoreOption < 1 || exploreMoreOption > 3);
 
     switch (exploreMoreOption) {
@@ -700,65 +699,30 @@ while (continueFlow) {
             let modifiedSelection = false;
 
             while (!modifiedSelection) {
-                showMessage(selectedCategories.map((category, index) => `Categoría ${index + 1}: ${category.name}\nStickers:\n${selectedStickers
-                    .filter(selected => selected.category === category.name)
-                    .map(selected => `- ${selected.sticker.name}`)
-                    .join('\n')}`).join('\n'));
+                // Mostrar el resumen de stickers seleccionados y opciones para descargar o volver
+                showSummaryPage();
 
-                let downloadOption;
+                // Agregar lógica para descargar stickers y volver al menú principal
+                let closeOption;
                 do {
-                    downloadOption = parseInt(prompt(`${firstName}, ¿quieres descargar los stickers seleccionados?\n \n1. Descargar stickers\n2. Volver`));
-                } while (isNaN(downloadOption) || (downloadOption !== 1 && downloadOption !== 2));
+                    closeOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres descargar los stickers seleccionados?\n \n1. Descargar stickers\n2. Volver`));
+                } while (isNaN(closeOption) || (closeOption !== 1 && closeOption !== 2));
 
-                switch (downloadOption) {
-                    case 1:
-                        console.log(`${firstName}, aquí está el resumen de tus stickers seleccionados:`);
-
-                        let selectedStickersSet = new Set();
-
-                        for (const selectedCategory of selectedCategories) {
-                            console.log(`Categoría: ${selectedCategory.name}\nStickers:`);
-
-                            for (const selectedSticker of selectedStickers.filter(selected => selected.category === selectedCategory.name && !selectedStickersSet.has(selected.sticker.code))) {
-                                selectedStickersSet.add(selectedSticker.sticker.code);
-
-                                console.log(`- ${selectedSticker.sticker.name}`);
-                            }
-
-                            console.log("\n");
-                        }
-
-                        showMessage(`¡Descarga confirmada, ${firstName}! Los stickers han sido descargados.`);
-
-                        // Añadido: Volver al menú principal después de la instalación
-                        titleHeading("Instalar Stickers");
-                        showMessage("Para instalar tus stickers, sigue estos pasos:\n1. Abre tu aplicación de mensajería favorita.\n2. Selecciona la conversación o chat donde deseas enviar los stickers.\n3. Busca la opción de stickers en el menú de emojis.\n4. ¡Disfruta enviando tus nuevos stickers!");
-
-                        let closeOption;
-                        do {
-                            closeOption = parseInt(prompt("Presiona 1 para cerrar e iniciar un nuevo ciclo de selección."));
-                        } while (isNaN(closeOption) || closeOption !== 1);
-
-                        if (closeOption === 1) {
-                            // Continuar con el flujo principal
-                            startFlow();
-                        } else {
-                            continueFlow = false;
-                        }
-
-                        break;
-                    case 2:
-                        showMessage("Los stickers han sido descargados. ¡Gracias por explorar!");
-                        modifiedSelection = true;
-                        break;
-                    default:
-                        showMessage("Opción no válida. Los stickers no han sido descargados.");
-                        break;
+                if (closeOption === 1) {
+                    // Continuar con el flujo principal
+                    startFlow();
+                } else {
+                    continueFlow = false;
                 }
+
+                break;
             }
 
             break;
         case 3:
+            // Mostrar el resumen de stickers seleccionados y opciones para descargar o volver
+            showSummaryPage();
+            
             console.log(`${firstName}, aquí está el resumen de tus stickers seleccionados:`);
 
             let selectedStickersSet = new Set();
