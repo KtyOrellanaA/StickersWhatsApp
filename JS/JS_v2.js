@@ -20,7 +20,8 @@ function showMessage(messageContent) {
 let firstName = localStorage.getItem('firstName');
 
 // Definición de variables globales
-let selectedStickers = [];
+let selectedStickers = []; // Arreglo para almacenar los stickers seleccionados
+let cartCount = 0; // Contador para el carrito
 const selectedCategories = [];
 
 // Función para iniciar el flujo principal
@@ -30,12 +31,10 @@ function startFlow() {
     // Aquí podrías continuar con el resto del flujo principal
 }
 
-// Función para guardar el nombre del usuario en el Local Storage
+// Función para guardar el nombre del usuario en LocalStorage
 function saveUserFirstName() {
-    if (!firstName) {
-        const userInput = prompt('Por favor, ingresa tu nombre:');
-        localStorage.setItem('firstName', userInput);
-    }
+    const firstName = prompt("Por favor, ingresa tu nombre:");
+    localStorage.setItem('firstName', firstName);
 }
 
 // Verificar si ya hay un nombre de usuario en el local storage
@@ -88,10 +87,9 @@ const categories = [
     },
 ];
 
+// Función para limpiar el contenido principal
 function clearContent() {
-    if (mainContainer) {
-        mainContainer.innerHTML = '';
-    }
+    mainContainer.innerHTML = '';
 }
 
 // Función para inicializar la página principal con formulario
@@ -337,6 +335,15 @@ function showFollowUsPage() {
     mainContainer.appendChild(socialList);
 }
 
+// Añadido: Función para mostrar el número de stickers en el carrito
+function showCartItemCount() {
+    const cartItemCount = selectedStickers.length;
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartItemCount.toString();
+    }
+}
+
 // Añadido: Función para mostrar la página de "Resumen de Stickers" y descargar los stickers seleccionados
 function showCartPage() {
     clearContent();
@@ -499,6 +506,7 @@ function showStickers(categoryIndex) {
         actionButton.addEventListener('click', () => {
             toggleStickerSelection(selectedCategory.name, sticker.name);
             showSummaryPage(); // Actualiza el resumen después de cambiar la selección
+            showCartItemCount(); // Actualiza el contador del carrito
         });
     
         // Añadir elementos al contenedor del sticker
@@ -518,7 +526,8 @@ function addToSelection(category, sticker) {
 
 // Añadido: Función para agregar stickers al carrito
 function addToCart(category, sticker) {
-    showMessage(`¡Excelente elección ${firstName}! "${sticker}" ha sido agregado al carrito de compras.`);
+    cartCount++; // Incrementar el contador del carrito
+    showMessage(`¡Excelente elección ${firstName}! "${sticker}" ha sido agregado al carrito de compras. (${cartCount} en el carrito)`);
 }
 
 // Añadido: Función para mostrar la página principal después de la instalación
@@ -535,7 +544,7 @@ function showCategoriesPage() {
     renderCategories(categories);
 }
 
-// Función para mostrar el resumen de stickers seleccionados
+// Añadido: Función para mostrar el resumen de stickers seleccionados
 function showSummaryPage() {
     clearContent();
     titleHeading("Resumen de Stickers Seleccionados");
@@ -555,6 +564,12 @@ function showSummaryPage() {
     returnButton.textContent = 'Volver al Menú Principal';
     returnButton.addEventListener('click', showMainMenu);
     mainContainer.appendChild(returnButton);
+}
+
+// Función para mostrar el resumen de stickers seleccionados y opciones adicionales
+function showSummaryPageWithOptions() {
+    showSummaryPage();
+    showCartItemCount(); // Actualiza el contador del carrito
 }
 
 // Añadido: Función para descargar los stickers seleccionados y redirigir después de la descarga
@@ -607,7 +622,7 @@ function showMainMenu() {
     showNavigationMenu();
 }
 
-// Iniciar el flujo principal al cargar la página
+// Añadido: Verificar si el nombre de usuario ya está guardado en LocalStorage
 document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('firstName')) {
         saveUserFirstName();
@@ -647,6 +662,7 @@ while (continueFlow) {
             showMessage(`¡Excelente elección ${localStorage.getItem('firstName')}! Tu sticker favorito es: ${selectedSticker.name}`);
 
             selectedStickers.push({ category: selectedCategory.name, sticker: selectedSticker });
+            addToCart(selectedCategory.name, selectedSticker.name); // Agregar al carrito
         } else {
             showMessage(`Ya has seleccionado el sticker ${selectedSticker.name}. Elige otro.`);
         }

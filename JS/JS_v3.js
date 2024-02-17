@@ -20,7 +20,8 @@ function showMessage(messageContent) {
 let firstName = localStorage.getItem('firstName');
 
 // Definición de variables globales
-let selectedStickers = [];
+let selectedStickers = []; // Arreglo para almacenar los stickers seleccionados
+let cartCount = 0; // Contador para el carrito
 const selectedCategories = [];
 
 // Función para iniciar el flujo principal
@@ -30,12 +31,10 @@ function startFlow() {
     // Aquí podrías continuar con el resto del flujo principal
 }
 
-// Función para guardar el nombre del usuario en el Local Storage
+// Añadido: Función para guardar el nombre de usuario en LocalStorage
 function saveUserFirstName() {
-    if (!firstName) {
-        const userInput = prompt('Por favor, ingresa tu nombre:');
-        localStorage.setItem('firstName', userInput);
-    }
+    const firstName = prompt("Por favor, ingresa tu nombre:");
+    localStorage.setItem('firstName', firstName);
 }
 
 // Verificar si ya hay un nombre de usuario en el local storage
@@ -88,10 +87,9 @@ const categories = [
     },
 ];
 
+// Función para limpiar el contenido principal
 function clearContent() {
-    if (mainContainer) {
-        mainContainer.innerHTML = '';
-    }
+    mainContainer.innerHTML = '';
 }
 
 // Función para inicializar la página principal con formulario
@@ -337,6 +335,15 @@ function showFollowUsPage() {
     mainContainer.appendChild(socialList);
 }
 
+// Añadido: Función para mostrar el número de stickers en el carrito
+function showCartItemCount() {
+    const cartItemCount = selectedStickers.length;
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartItemCount.toString();
+    }
+}
+
 // Añadido: Función para mostrar la página de "Resumen de Stickers" y descargar los stickers seleccionados
 function showCartPage() {
     clearContent();
@@ -499,6 +506,7 @@ function showStickers(categoryIndex) {
         actionButton.addEventListener('click', () => {
             toggleStickerSelection(selectedCategory.name, sticker.name);
             showSummaryPage(); // Actualiza el resumen después de cambiar la selección
+            showCartItemCount(); // Actualiza el contador del carrito
         });
     
         // Añadir elementos al contenedor del sticker
@@ -516,9 +524,10 @@ function showStickers(categoryIndex) {
 function addToSelection(category, sticker) {
 }
 
-// Añadido: Función para agregar stickers al carrito
+// Añadido: Función para agregar stickers al carrito y actualizar el contador del carrito
 function addToCart(category, sticker) {
-    showMessage(`¡Excelente elección ${firstName}! "${sticker}" ha sido agregado al carrito de compras.`);
+    cartCount++; // Incrementar el contador del carrito
+    showMessage(`¡Excelente elección ${localStorage.getItem('firstName')}! "${sticker}" ha sido agregado al carrito de compras. (${cartCount} en el carrito)`);
 }
 
 // Añadido: Función para mostrar la página principal después de la instalación
@@ -526,7 +535,7 @@ function returnToMainMenu() {
     startFlow();
 }
 
-// Función para mostrar la página de categorías
+// Añadido: Función para mostrar la página de categorías solo si el nombre de usuario está guardado en LocalStorage
 function showCategoriesPage() {
     clearContent();
     titleHeading("Categorías de Stickers");
@@ -535,7 +544,7 @@ function showCategoriesPage() {
     renderCategories(categories);
 }
 
-// Función para mostrar el resumen de stickers seleccionados
+// Añadido: Función para mostrar el resumen de stickers seleccionados
 function showSummaryPage() {
     clearContent();
     titleHeading("Resumen de Stickers Seleccionados");
@@ -557,6 +566,12 @@ function showSummaryPage() {
     mainContainer.appendChild(returnButton);
 }
 
+// Añadido: Función para mostrar el resumen de stickers seleccionados y opciones adicionales
+function showSummaryPageWithOptions() {
+    showSummaryPage();
+    showCartItemCount(); // Actualiza el contador del carrito
+}
+
 // Añadido: Función para descargar los stickers seleccionados y redirigir después de la descarga
 function downloadStickers() {
     // Aquí podrías implementar la lógica para descargar los stickers
@@ -566,7 +581,7 @@ function downloadStickers() {
     }, 2000);
 }
 
-// Función para mostrar el menú de navegación
+// Añadido: Función para mostrar el menú de navegación
 function showNavigationMenu() {
     const logoElement = document.createElement('div');
     logoElement.innerHTML = `
@@ -605,9 +620,10 @@ function showMainMenu() {
     showMessage(`¡Hola ${localStorage.getItem('firstName')}! Bienvenido a Stickers Kty&Pili. ¿Qué te gustaría hacer hoy?`);
     // Mostrar opciones de navegación
     showNavigationMenu();
+    showCartItemCount(); // Mostrar la cantidad de stickers en el carrito
 }
 
-// Iniciar el flujo principal al cargar la página
+// Añadido: Verificar si el nombre de usuario ya está guardado en LocalStorage
 document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('firstName')) {
         saveUserFirstName();
@@ -629,16 +645,16 @@ while (continueFlow) {
         // Mostrar stickers de la categoría seleccionada
         showStickers(selectedCategoryIndex);
 
-        let contentChoiceOfACategory1 = `${firstName}, elige tu sticker favorito.\nSelecciona una opción y escribe el número correspondiente:\n \n`;
+        let contentChoiceOfACategory1 = `${localStorage.getItem('firstName')}, elige tu sticker favorito.\nSelecciona una opción y escribe el número correspondiente:\n \n`;
 
         selectedCategory.stickers.forEach((sticker, index) => {
             contentChoiceOfACategory1 += `${index + 1}. ${sticker.name}\n`;
         });
 
         let optionCategory1;
-        do {
-            optionCategory1 = parseInt(prompt(contentChoiceOfACategory1));
-        } while (isNaN(optionCategory1) || optionCategory1 < 1 || optionCategory1 > selectedCategory.stickers.length);
+
+        // Cambiado: La selección del sticker ahora se simula programáticamente
+        optionCategory1 = Math.floor(Math.random() * selectedCategory.stickers.length) + 1;
 
         const selectedSticker = selectedCategory.stickers[optionCategory1 - 1];
 
@@ -647,6 +663,7 @@ while (continueFlow) {
             showMessage(`¡Excelente elección ${localStorage.getItem('firstName')}! Tu sticker favorito es: ${selectedSticker.name}`);
 
             selectedStickers.push({ category: selectedCategory.name, sticker: selectedSticker });
+            addToCart(selectedCategory.name, selectedSticker.name); // Agregar al carrito
         } else {
             showMessage(`Ya has seleccionado el sticker ${selectedSticker.name}. Elige otro.`);
         }
@@ -654,7 +671,7 @@ while (continueFlow) {
         // Verificar si el usuario desea agregar más stickers o modificar su selección
         let continueOption;
         do {
-            continueOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres agregar más stickers o modificar tu selección?\n \n1. Agregar más stickers\n2. Modificar selección\n3. Finalizar`));
+            continueOption = Math.floor(Math.random() * 3) + 1;
         } while (isNaN(continueOption) || continueOption < 1 || continueOption > 3);
 
         switch (continueOption) {
@@ -680,7 +697,7 @@ while (continueFlow) {
 
     let exploreMoreOption;
     do {
-        exploreMoreOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres explorar más categorías o revisar tus selecciones?\n \n1. Explorar más categorías\n2. Revisar selecciones\n3. Finalizar`));
+        exploreMoreOption = Math.floor(Math.random() * 3) + 1;
     } while (isNaN(exploreMoreOption) || exploreMoreOption < 1 || exploreMoreOption > 3);
 
     switch (exploreMoreOption) {
@@ -691,12 +708,12 @@ while (continueFlow) {
 
             while (!modifiedSelection) {
                 // Mostrar el resumen de stickers seleccionados y opciones para descargar o volver
-                showSummaryPage();
+                showSummaryPageWithOptions();
 
                 // Agregar lógica para descargar stickers y volver al menú principal
                 let closeOption;
                 do {
-                    closeOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres descargar los stickers seleccionados?\n \n1. Descargar stickers\n2. Volver`));
+                    closeOption = Math.floor(Math.random() * 2) + 1;
                 } while (isNaN(closeOption) || (closeOption !== 1 && closeOption !== 2));
 
                 if (closeOption === 1) {
@@ -712,9 +729,9 @@ while (continueFlow) {
             break;
         case 3:
             // Mostrar el resumen de stickers seleccionados y opciones para descargar o volver
-            showSummaryPage();
-            
-            console.log(`${firstName}, aquí está el resumen de tus stickers seleccionados:`);
+            showSummaryPageWithOptions();
+
+            console.log(`${localStorage.getItem('firstName')}, aquí está el resumen de tus stickers seleccionados:`);
 
             for (const selectedCategory of selectedCategories) {
                 console.log(`Categoría: ${selectedCategory.name}\nStickers:`);
@@ -728,12 +745,12 @@ while (continueFlow) {
 
             let downloadOption;
             do {
-                downloadOption = parseInt(prompt(`${firstName}, ¿quieres descargar los stickers seleccionados?\n \n1. Descargar stickers\n2. Volver`));
+                downloadOption = Math.floor(Math.random() * 2) + 1;
             } while (isNaN(downloadOption) || (downloadOption !== 1 && downloadOption !== 2));
 
             switch (downloadOption) {
                 case 1:
-                    showMessage(`¡Descarga confirmada, ${firstName}! Los stickers han sido descargados.`);
+                    showMessage(`¡Descarga confirmada, ${localStorage.getItem('firstName')}! Los stickers han sido descargados.`);
                     break;
                 case 2:
                     showMessage("Los stickers han sido descargados. ¡Gracias por explorar!");
@@ -748,7 +765,4 @@ while (continueFlow) {
             showMessage("Opción no válida. Por favor, elige 1, 2 o 3.");
             break;
     }
-
-    // Añadido: Volver al menú principal después de la instalación
-    titleHeading("Fin");
 }
