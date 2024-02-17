@@ -1,3 +1,6 @@
+// Importar la librería SweetAlert
+// import Swal from 'sweetalert2';
+
 // Elementos DOM
 const mainContainer = document.getElementById('main-content');
 const categoriesContainer = document.getElementById('categories-container');
@@ -9,6 +12,16 @@ const titleHeading = (title) => {
     titleElement.textContent = title;
     mainContainer.appendChild(titleElement);
 };
+
+// Añadido: Función para mostrar mensajes utilizando SweetAlert
+function showMessage(message, type = 'info') {
+    Swal.fire({
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 2000 // Ocultar automáticamente después de 2 segundos
+    });
+}
 
 function showMessage(messageContent) {
     const messageElement = document.createElement('p');
@@ -27,11 +40,10 @@ const selectedCategories = [];
 // Función para iniciar el flujo principal
 function startFlow() {
     saveUserFirstName();
-    showNavigationMenu();
-    // Aquí podrías continuar con el resto del flujo principal
+    showMainMenu();
 }
 
-// Función para guardar el nombre del usuario en LocalStorage
+// Añadido: Función para guardar el nombre de usuario en LocalStorage
 function saveUserFirstName() {
     const firstName = prompt("Por favor, ingresa tu nombre:");
     localStorage.setItem('firstName', firstName);
@@ -465,6 +477,8 @@ function toggleStickerSelection(categoryName, stickerName) {
         // Si no está seleccionado, agregarlo
         selectedStickers.push({ category: categoryName, sticker: { name: stickerName } });
     }
+    // Actualizar el contador del carrito
+    showCartItemCount();
 }
 
 // Añadido: Función para seleccionar una categoría de manera interactiva
@@ -478,7 +492,10 @@ function showStickers(categoryIndex) {
     const selectedCategory = categories[categoryIndex];
     titleHeading(`Stickers de ${selectedCategory.name}`);
     
-    selectedCategory.stickers.forEach(sticker => {
+    // Ordenar stickers alfabéticamente por nombre
+    const sortedStickers = selectedCategory.stickers.sort((a, b) => a.name.localeCompare(b.name));
+    
+    sortedStickers.forEach(sticker => {
         const stickerCard = document.createElement('div');
         stickerCard.classList.add('sticker-card');
     
@@ -491,6 +508,9 @@ function showStickers(categoryIndex) {
         stickerImage.src = sticker.imageUrl;
         stickerImage.alt = sticker.name;
         stickerImage.classList.add('sticker-image');
+        // Reducir tamaño de imagen a 100px por lado
+        stickerImage.style.width = '100px';
+        stickerImage.style.height = '100px';
     
         // Contenedor para el nombre del sticker
         const stickerNameContainer = document.createElement('div');
@@ -506,7 +526,6 @@ function showStickers(categoryIndex) {
         actionButton.addEventListener('click', () => {
             toggleStickerSelection(selectedCategory.name, sticker.name);
             showSummaryPage(); // Actualiza el resumen después de cambiar la selección
-            showCartItemCount(); // Actualiza el contador del carrito
         });
     
         // Añadir elementos al contenedor del sticker
@@ -524,10 +543,16 @@ function showStickers(categoryIndex) {
 function addToSelection(category, sticker) {
 }
 
-// Añadido: Función para agregar stickers al carrito
+// Añadido: Función para agregar stickers al carrito y actualizar el contador del carrito
 function addToCart(category, sticker) {
     cartCount++; // Incrementar el contador del carrito
-    showMessage(`¡Excelente elección ${firstName}! "${sticker}" ha sido agregado al carrito de compras. (${cartCount} en el carrito)`);
+    // Mostrar mensaje de confirmación con el nombre del sticker y la cantidad en el carrito
+    Swal.fire({
+        title: `¡Excelente elección ${localStorage.getItem('firstName')}!`,
+        text: `"${sticker}" ha sido agregado al carrito de compras. (${cartCount} en el carrito)`,
+        icon: 'success',
+        confirmButtonText: 'Ok'
+    });
 }
 
 // Añadido: Función para mostrar la página principal después de la instalación
@@ -535,11 +560,16 @@ function returnToMainMenu() {
     startFlow();
 }
 
-// Función para mostrar la página de categorías
+// Función para mostrar las categorías de stickers
 function showCategoriesPage() {
     clearContent();
     titleHeading("Categorías de Stickers");
-    showMessage(`¡Hola ${localStorage.getItem('firstName')}! Explora nuestras increíbles categorías de stickers.`);
+    Swal.fire({
+        title: `¡Hola ${localStorage.getItem('firstName')}!`,
+        text: 'Explora nuestras increíbles categorías de stickers.',
+        icon: 'info',
+        confirmButtonText: 'Ok'
+    });
     // Renderizar las categorías de manera dinámica
     renderCategories(categories);
 }
@@ -566,19 +596,24 @@ function showSummaryPage() {
     mainContainer.appendChild(returnButton);
 }
 
-// Función para mostrar el resumen de stickers seleccionados y opciones adicionales
+// Añadido: Función para mostrar el resumen de stickers seleccionados y opciones adicionales
 function showSummaryPageWithOptions() {
     showSummaryPage();
-    showCartItemCount(); // Actualiza el contador del carrito
+    showCartItemCount();
 }
 
 // Añadido: Función para descargar los stickers seleccionados y redirigir después de la descarga
 function downloadStickers() {
     // Aquí podrías implementar la lógica para descargar los stickers
-    showMessage('¡Descarga exitosa!');
-    setTimeout(() => {
-        showInstallationPage(); // Redirige a la página de instalación después de 2 segundos
-    }, 2000);
+    Swal.fire({
+        title: '¡Descarga exitosa!',
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
+        showConfirmButton: false
+    }).then(() => {
+        startFlow(); // Redirige a la página de instalación después de 2 segundos
+    });
 }
 
 // Función para mostrar el menú de navegación
@@ -613,13 +648,20 @@ function showNavigationMenu() {
     mainContainer.appendChild(navigationContainer);
 }
 
-// Añadido: Función para mostrar el menú principal
+// Función para mostrar el menú principal y actualizar el contador del carrito
 function showMainMenu() {
     clearContent();
     titleHeading("Menú Principal");
-    showMessage(`¡Hola ${localStorage.getItem('firstName')}! Bienvenido a Stickers Kty&Pili. ¿Qué te gustaría hacer hoy?`);
+    Swal.fire({
+        title: `¡Hola ${localStorage.getItem('firstName')}!`,
+        text: 'Bienvenido a Stickers Kty&Pili. ¿Qué te gustaría hacer hoy?',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+    });
     // Mostrar opciones de navegación
     showNavigationMenu();
+    // Mostrar contador del carrito
+    showCartItemCount();
 }
 
 // Añadido: Verificar si el nombre de usuario ya está guardado en LocalStorage
@@ -627,8 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('firstName')) {
         saveUserFirstName();
     }
-    showMainMenu();
-    showCategoriesPage();
+    startFlow();
 });
 
 // Bucle principal
@@ -636,7 +677,12 @@ let continueFlow = true;
 while (continueFlow) {
     let selectedCategoryIndex = chooseCategoryInteractive(categories);
     let selectedCategory = categories[selectedCategoryIndex];
-    showMessage(`¡Excelente elección ${localStorage.getItem('firstName')}! Descubre los stickers disponibles en ${selectedCategory.name}`);
+    Swal.fire({
+        title: `¡Excelente elección ${localStorage.getItem('firstName')}!`,
+        text: `Descubre los stickers disponibles en ${selectedCategory.name}`,
+        icon: 'success',
+        confirmButtonText: 'Ok'
+    });
 
     let keepRunningSticker = true;
 
@@ -644,33 +690,43 @@ while (continueFlow) {
         // Mostrar stickers de la categoría seleccionada
         showStickers(selectedCategoryIndex);
 
-        let contentChoiceOfACategory1 = `${firstName}, elige tu sticker favorito.\nSelecciona una opción y escribe el número correspondiente:\n \n`;
+        let contentChoiceOfACategory1 = `${localStorage.getItem('firstName')}, elige tu sticker favorito.\nSelecciona una opción y escribe el número correspondiente:\n \n`;
 
         selectedCategory.stickers.forEach((sticker, index) => {
             contentChoiceOfACategory1 += `${index + 1}. ${sticker.name}\n`;
         });
 
         let optionCategory1;
-        do {
-            optionCategory1 = parseInt(prompt(contentChoiceOfACategory1));
-        } while (isNaN(optionCategory1) || optionCategory1 < 1 || optionCategory1 > selectedCategory.stickers.length);
+
+        // Cambiado: La selección del sticker ahora se simula programáticamente
+        optionCategory1 = Math.floor(Math.random() * selectedCategory.stickers.length) + 1;
 
         const selectedSticker = selectedCategory.stickers[optionCategory1 - 1];
 
         // Verificamos si el sticker ya fue seleccionado
         if (!selectedStickers.find(selected => selected.category === selectedCategory.name && selected.sticker.name === selectedSticker.name)) {
-            showMessage(`¡Excelente elección ${localStorage.getItem('firstName')}! Tu sticker favorito es: ${selectedSticker.name}`);
+            Swal.fire({
+                title: `¡Excelente elección ${localStorage.getItem('firstName')}!`,
+                text: `Tu sticker favorito es: ${selectedSticker.name}`,
+                icon: 'success',
+                confirmButtonText: 'Ok'
+            });
 
             selectedStickers.push({ category: selectedCategory.name, sticker: selectedSticker });
             addToCart(selectedCategory.name, selectedSticker.name); // Agregar al carrito
         } else {
-            showMessage(`Ya has seleccionado el sticker ${selectedSticker.name}. Elige otro.`);
+            Swal.fire({
+                title: `Ya has seleccionado el sticker ${selectedSticker.name}`,
+                text: 'Elige otro.',
+                icon: 'warning',
+                confirmButtonText: 'Ok'
+            });
         }
 
         // Verificar si el usuario desea agregar más stickers o modificar su selección
         let continueOption;
         do {
-            continueOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres agregar más stickers o modificar tu selección?\n \n1. Agregar más stickers\n2. Modificar selección\n3. Finalizar`));
+            continueOption = Math.floor(Math.random() * 3) + 1;
         } while (isNaN(continueOption) || continueOption < 1 || continueOption > 3);
 
         switch (continueOption) {
@@ -696,7 +752,7 @@ while (continueFlow) {
 
     let exploreMoreOption;
     do {
-        exploreMoreOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres explorar más categorías o revisar tus selecciones?\n \n1. Explorar más categorías\n2. Revisar selecciones\n3. Finalizar`));
+        exploreMoreOption = Math.floor(Math.random() * 3) + 1;
     } while (isNaN(exploreMoreOption) || exploreMoreOption < 1 || exploreMoreOption > 3);
 
     switch (exploreMoreOption) {
@@ -707,12 +763,12 @@ while (continueFlow) {
 
             while (!modifiedSelection) {
                 // Mostrar el resumen de stickers seleccionados y opciones para descargar o volver
-                showSummaryPage();
+                showSummaryPageWithOptions();
 
                 // Agregar lógica para descargar stickers y volver al menú principal
                 let closeOption;
                 do {
-                    closeOption = parseInt(prompt(`${localStorage.getItem('firstName')}, ¿quieres descargar los stickers seleccionados?\n \n1. Descargar stickers\n2. Volver`));
+                    closeOption = Math.floor(Math.random() * 2) + 1;
                 } while (isNaN(closeOption) || (closeOption !== 1 && closeOption !== 2));
 
                 if (closeOption === 1) {
@@ -728,9 +784,9 @@ while (continueFlow) {
             break;
         case 3:
             // Mostrar el resumen de stickers seleccionados y opciones para descargar o volver
-            showSummaryPage();
-            
-            console.log(`${firstName}, aquí está el resumen de tus stickers seleccionados:`);
+            showSummaryPageWithOptions();
+
+            console.log(`${localStorage.getItem('firstName')}, aquí está el resumen de tus stickers seleccionados:`);
 
             for (const selectedCategory of selectedCategories) {
                 console.log(`Categoría: ${selectedCategory.name}\nStickers:`);
@@ -744,27 +800,44 @@ while (continueFlow) {
 
             let downloadOption;
             do {
-                downloadOption = parseInt(prompt(`${firstName}, ¿quieres descargar los stickers seleccionados?\n \n1. Descargar stickers\n2. Volver`));
+                downloadOption = Math.floor(Math.random() * 2) + 1;
             } while (isNaN(downloadOption) || (downloadOption !== 1 && downloadOption !== 2));
 
             switch (downloadOption) {
                 case 1:
-                    showMessage(`¡Descarga confirmada, ${firstName}! Los stickers han sido descargados.`);
+                    Swal.fire({
+                        title: `¡Descarga confirmada, ${localStorage.getItem('firstName')}!`,
+                        text: 'Los stickers han sido descargados.',
+                        icon: 'success',
+                        confirmButtonText: 'Ok'
+                    });
                     break;
                 case 2:
-                    showMessage("Los stickers han sido descargados. ¡Gracias por explorar!");
+                    Swal.fire({
+                        title: 'Los stickers han sido descargados.',
+                        text: '¡Gracias por explorar!',
+                        icon: 'success',
+                        confirmButtonText: 'Ok'
+                    });
                     break;
                 default:
-                    showMessage("Opción no válida. Los stickers no han sido descargados.");
+                    Swal.fire({
+                        title: 'Opción no válida.',
+                        text: 'Los stickers no han sido descargados.',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    });
                     break;
             }
 
             break;
         default:
-            showMessage("Opción no válida. Por favor, elige 1, 2 o 3.");
+            Swal.fire({
+                title: 'Opción no válida.',
+                text: 'Por favor, elige 1, 2 o 3.',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
             break;
     }
-
-    // Añadido: Volver al menú principal después de la instalación
-    titleHeading("Fin");
 }
