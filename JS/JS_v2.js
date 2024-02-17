@@ -20,7 +20,7 @@ function showMessage(messageContent) {
 let firstName = localStorage.getItem('firstName');
 
 // Definición de variables globales
-const selectedStickers = new Set();
+let selectedStickers = [];
 const selectedCategories = [];
 
 // Función para iniciar el flujo principal
@@ -406,7 +406,6 @@ function showThankYouContent() {
     thankYouContentContainer.appendChild(returnHomeButton);
 }
 
-// Añadido: Plantilla para visualizar categorías de stickers
 function renderCategories(categories) {
     // Verificamos si hay categorías para mostrar
     if (categories && categories.length > 0) {
@@ -450,7 +449,7 @@ function clearCategoriesContainer() {
 
 // Puedes simplificar el código usando findIndex y spread operator.
 function toggleStickerSelection(categoryName, stickerName) {
-    const existingSelectionIndex = Array.from(selectedStickers).findIndex(selected => selected.category === categoryName && selected.sticker.name === stickerName);
+    const existingSelectionIndex = selectedStickers.findIndex(selected => selected.category === categoryName && selected.sticker.name === stickerName);
 
     if (existingSelectionIndex !== -1) {
         // Si ya está seleccionado, eliminarlo
@@ -520,7 +519,6 @@ function addToSelection(category, sticker) {
 // Añadido: Función para agregar stickers al carrito
 function addToCart(category, sticker) {
     showMessage(`¡Excelente elección ${firstName}! "${sticker}" ha sido agregado al carrito de compras.`);
-    // Puedes realizar aquí la lógica para agregar el sticker al carrito
 }
 
 // Añadido: Función para mostrar la página principal después de la instalación
@@ -533,7 +531,6 @@ function showCategoriesPage() {
     clearContent();
     titleHeading("Categorías de Stickers");
     showMessage(`¡Hola ${localStorage.getItem('firstName')}! Explora nuestras increíbles categorías de stickers.`);
-
     // Renderizar las categorías de manera dinámica
     renderCategories(categories);
 }
@@ -619,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showCategoriesPage();
 });
 
-// Bucle principal (eliminando el uso de prompt)
+// Bucle principal
 let continueFlow = true;
 while (continueFlow) {
     let selectedCategoryIndex = chooseCategoryInteractive(categories);
@@ -646,16 +643,10 @@ while (continueFlow) {
         const selectedSticker = selectedCategory.stickers[optionCategory1 - 1];
 
         // Verificamos si el sticker ya fue seleccionado
-        if (!selectedStickers.has(selectedSticker.code)) {
-            showMessage(`¡Excelente elección ${firstName}! Tu sticker favorito es: ${selectedSticker.name}`);
+        if (!selectedStickers.find(selected => selected.category === selectedCategory.name && selected.sticker.name === selectedSticker.name)) {
+            showMessage(`¡Excelente elección ${localStorage.getItem('firstName')}! Tu sticker favorito es: ${selectedSticker.name}`);
 
-            const selectedStickerObject = {
-                category: selectedCategory.name,
-                sticker: selectedSticker,
-            };
-
-            selectedStickers.add(selectedSticker.code);
-            selectedStickers.add(selectedStickerObject);
+            selectedStickers.push({ category: selectedCategory.name, sticker: selectedSticker });
         } else {
             showMessage(`Ya has seleccionado el sticker ${selectedSticker.name}. Elige otro.`);
         }
@@ -725,14 +716,10 @@ while (continueFlow) {
             
             console.log(`${firstName}, aquí está el resumen de tus stickers seleccionados:`);
 
-            let selectedStickersSet = new Set();
-
             for (const selectedCategory of selectedCategories) {
                 console.log(`Categoría: ${selectedCategory.name}\nStickers:`);
 
-                for (const selectedSticker of selectedStickers.filter(selected => selected.category === selectedCategory.name && !selectedStickersSet.has(selected.sticker.code))) {
-                    selectedStickersSet.add(selectedSticker.sticker.code);
-
+                for (const selectedSticker of selectedStickers.filter(selected => selected.category === selectedCategory.name)) {
                     console.log(`- ${selectedSticker.sticker.name}`);
                 }
 
